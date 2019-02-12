@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const ROOT_PATH = process.cwd()
+const app = require(ROOT_PATH + '/app/app')
+const config = require(ROOT_PATH + '/config/config')
+const log = require(ROOT_PATH + '/app/logger')
+
+app.set('port', process.env.PORT || config.port)
+
+const server = app.listen(app.get('port'), () => {
+  log.info('API is listening on port ' + app.get('port'))
+})

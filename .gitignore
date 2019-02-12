@@ -1,0 +1,13 @@
+# ide
+.idea
+.idea/
+
+# config
+config/*.json
+
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+logs/
