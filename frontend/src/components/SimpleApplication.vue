@@ -8,12 +8,24 @@
       </div>
         {{ address }}
       <div>
-        Balance: {{ balance }}
+        Balance: {{ balance }} <button v-on:click="refreshBalance">Refresh</button>
       </div>
       <div>
-        <input type="file" placeholder="Choose file">
+        <input type="file" v-on:change="previewFiles($event)" ref="myFiles" placeholder="Choose file">
         <button v-on:click="saveFile">Upload</button>
       </div>
+      <template v-if="filePath">
+        <br/>
+        <div>
+          File path: {{ filePath }}
+        </div>
+        <br/>
+        <div>
+          File name: {{ fileName }}
+        </div>
+        <br/>
+        <button v-on:click="downloadFile">Download</button>
+      </template>
     </section>
   </div>
 </template>
@@ -21,6 +33,7 @@
 <script>
   import { store } from "./SimpleStore";
   import ethUtil from 'ethereumjs-util'
+  import { mapMutations, mapActions } from 'vuex'
 
   export default {
     name: 'SimpleApplication',
@@ -38,20 +51,47 @@
       },
       fileName () {
         return store.state.fileName
+      },
+      filePath () {
+        return store.state.filePath
       }
     },
     methods: {
       generateAddress() {
-        this.address = this.privateKey
-        store.dispatch("getBalance", '0xb7586945167e9271E2881E92c13F13a8Cc776406')
+        store.dispatch('generateAddress', this.privateKey)
+        store.dispatch('getBalance')
       },
-      saveFile() {
-
+      async saveFile() {
+        await store.dispatch('generateTransaction')
+        await store.dispatch('uploadFile', this.file)
+      },
+      previewFiles(event) {
+        let data = new FormData();
+        let file = event.target.files[0];
+        data.append('name', file.name)
+        data.append('file', file)
+        this.file = data
+        store.dispatch('setFileName', file.name)
+      },
+      async downloadFile() {
+        let file = await store.dispatch('downloadFile')
+        let blob = new Blob([file], { type : 'text/plain' })
+        let url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        a.href = url;
+        a.download = this.fileName;
+        a.click();
+      },
+      refreshBalance() {
+        store.dispatch('getBalance')
       }
     },
     data: function () {
       return {
-        address: null
+        address: null,
+        fileToUpload: null,
       }
     }
   }

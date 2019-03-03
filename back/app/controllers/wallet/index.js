@@ -1,5 +1,7 @@
 const ABI = require('./token.json')
+const axios = require('axios')
 const ROOT_PATH = process.cwd()
+const log = require('./../../logger')
 const config = require(ROOT_PATH + '/config/config.json')
 const Web3 = require('web3')
 const web3 = new Web3(config.ethUrl)
@@ -12,9 +14,29 @@ module.exports = function Wallet () {
    * @async
    */
   async function getBalance(address) {
-    const contract = new web3.eth.Contract(ABI, config.tokenAddress)
-    let response = await contract.methods.balanceOf(address).call()
-    return response.balance
+    // const contract = new web3.eth.Contract(ABI, config.tokenAddress)
+    log.info(address)
+    address = address.slice(2)
+    address = '000000000000000000000000' + address
+    const response = await axios.post(config.ethUrl, {
+      'jsonrpc': '2.0',
+      'method': 'eth_call',
+      'params': [{
+          'to': config.tokenAddress,
+          data: '0x70a08231' + address
+        },
+        'latest'
+      ],
+      'id':1,
+    },                 {
+      headers: {
+         'Content-Type': 'application/json',
+        }
+    })
+    log.info(response.data)
+    // let response = await contract.methods.balanceOf(address).call()
+
+    return response.data.result
   }
 
   /**
@@ -34,14 +56,27 @@ module.exports = function Wallet () {
       })
     })
   }
-
   /**
    * Get count of transaction (nonce) for address.
    * @param address
    * @returns {Promise<number>} number of transactions
    */
   async function getTransactionCount(address) {
-    return web3.eth.getTransactionCount(address, 'pending')
+    let response = await axios.post(config.ethUrl, {
+      'jsonrpc': '2.0',
+      'method': 'eth_getTransactionCount',
+      'params': [
+        address,
+        'latest'
+      ],
+      'id':1,
+    },                 {
+      headers: {
+         'Content-Type': 'application/json',
+        }
+    })
+    return response.data
+    // return web3.eth.getTransactionCount(address, 'pending')
   }
 
   return {

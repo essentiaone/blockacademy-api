@@ -1,6 +1,7 @@
 const ipfsAPI = require('ipfs-http-client')
 const ROOT_PATH = process.cwd()
 const config = require(ROOT_PATH + '/config/config.json')
+console.log(config)
 const ipfs = ipfsAPI({host: config.ipfsHost, port: config.ipfsPort, protocol: config.ipfsProtocol})
 const uploader = require('./helper')
 

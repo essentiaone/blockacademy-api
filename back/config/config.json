@@ -5,8 +5,8 @@
     "lifeTime": 3600
   },
   "ethUrl": "https://rinkeby.infura.io/v3/7cc791f285ed414fb8acbbe1c8e73d70",
-  "tokenAddress": "0x228c7d13244b6C6b24430f36FB54C5d5bE9536d7",
-  "ipfsHost": "localhost",
-  "ipfsPort": "5001",
-  "ipfsProtocol": "http"
+  "tokenAddress": "0xcCC8a2766A8bE10342Bbe7d8f39AaB54f0C6EAb6",
+  "ipfsHost": "ipfs.blockacademy.net",
+  "ipfsPort": "",
+  "ipfsProtocol": "https"
 }
